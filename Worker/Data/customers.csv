@@ -1,0 +1,4 @@
+CustomerId,FirstName,LastName,Email,Phone,City,Country
+1,Ana,Pérez,ana.perez@example.com,+34-600-111-111,Madrid,España
+2,Carlos,García,carlos.garcia@example.com,+34-600-222-222,Barcelona,España
+3,Lucia,Ramirez,lucia.ramirez@example.com,+34-600-333-333,Valencia,España
