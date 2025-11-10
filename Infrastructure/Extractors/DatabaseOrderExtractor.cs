@@ -61,19 +61,6 @@ public sealed class DatabaseOrderExtractor : IExtractor
         }
 
         _logger.LogInformation("Database extraction produced {Count} records", records.Count);
-        if (records.Count == 0)
-        {
-            _logger.LogWarning("Database extraction for {Dataset} produced no records", _options.DatasetName);
-            return;
-        }
-
-        var stagedFile = await stagingWriter
-            .WriteAsync(_options.DatasetName, records, cancellationToken)
-            .ConfigureAwait(false);
-
-        _logger.LogInformation(
-            "Database data for dataset {Dataset} was staged at {Path}",
-            _options.DatasetName,
-            stagedFile);
+        await stagingWriter.WriteAsync(_options.DatasetName, records, cancellationToken).ConfigureAwait(false);
     }
 }

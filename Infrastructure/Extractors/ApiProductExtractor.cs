@@ -50,20 +50,7 @@ public sealed class ApiProductExtractor : IExtractor
             }
 
             _logger.LogInformation("API extraction produced {Count} records", products.Count);
-            if (products.Count == 0)
-            {
-                _logger.LogWarning("API extraction for {Dataset} returned an empty collection", _options.DatasetName);
-                return;
-            }
-
-            var stagedFile = await stagingWriter
-                .WriteAsync(_options.DatasetName, products, cancellationToken)
-                .ConfigureAwait(false);
-
-            _logger.LogInformation(
-                "API data for dataset {Dataset} was staged at {Path}",
-                _options.DatasetName,
-                stagedFile);
+            await stagingWriter.WriteAsync(_options.DatasetName, products, cancellationToken).ConfigureAwait(false);
         }
         catch (HttpRequestException ex)
         {

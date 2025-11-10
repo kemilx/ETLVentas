@@ -20,15 +20,8 @@ public sealed class ExtractionOrchestrator
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        var tasks = _extractors.Select(extractor => ExecuteExtractorAsync(extractor, cancellationToken)).ToList();
-        if (tasks.Count == 0)
-        {
-            _logger.LogWarning("No extractors were registered. Skipping extraction cycle.");
-            return;
-        }
-
+        var tasks = _extractors.Select(extractor => ExecuteExtractorAsync(extractor, cancellationToken));
         await Task.WhenAll(tasks);
-        _logger.LogInformation("All extractors finished their execution for this cycle.");
     }
 
     private async Task ExecuteExtractorAsync(IExtractor extractor, CancellationToken cancellationToken)
