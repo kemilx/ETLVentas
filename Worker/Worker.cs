@@ -1,11 +1,22 @@
+using System.Diagnostics;
+using Application.Extraction;
+using Microsoft.Extensions.Options;
+
 namespace Worker
 {
-    public class Worker : BackgroundService
+    public sealed class Worker : BackgroundService
     {
+        private readonly ExtractionOrchestrator _orchestrator;
+        private readonly IOptionsMonitor<WorkerOptions> _options;
         private readonly ILogger<Worker> _logger;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(
+            ExtractionOrchestrator orchestrator,
+            IOptionsMonitor<WorkerOptions> options,
+            ILogger<Worker> logger)
         {
+            _orchestrator = orchestrator;
+            _options = options;
             _logger = logger;
         }
 
@@ -13,11 +24,24 @@ namespace Worker
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                var interval = TimeSpan.FromSeconds(Math.Max(1, _options.CurrentValue.IntervalSeconds));
+                var stopwatch = Stopwatch.StartNew();
+
+                _logger.LogInformation("Starting extraction cycle");
+                await _orchestrator.RunAsync(stoppingToken);
+                stopwatch.Stop();
+
+                _logger.LogInformation("Extraction cycle completed in {Elapsed}", stopwatch.Elapsed);
+
+                try
                 {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    await Task.Delay(interval, stoppingToken);
                 }
-                await Task.Delay(1000, stoppingToken);
+                catch (OperationCanceledException)
+                {
+                    // Host is shutting down; break the loop.
+                    break;
+                }
             }
         }
     }
