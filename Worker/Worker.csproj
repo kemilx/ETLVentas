@@ -15,10 +15,4 @@
     <ProjectReference Include="../Infrastructure/Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Data/**/*.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
